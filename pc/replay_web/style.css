@@ -5,8 +5,9 @@
   --line: #24312d;
   --ink: #e9f0ed;
   --muted: #8a9c97;
-  --model: #33c7b4;
+  --model: #3fe0c8;
   --opp: #f08a4b;
+  --opp2: #f08a4b;
   --food: #ff5d61;
   --cell: #111a18;
   --grid: #1c2724;
@@ -41,7 +42,7 @@ h1 { margin: 0; font-size: 34px; letter-spacing: 0.5px; }
 .tag { margin-left: auto; font-size: 14px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
 .chip { width: 16px; height: 16px; border-radius: 5px; display: inline-block; }
 .chip.model { background: var(--model); }
-.chip.opp { background: var(--opp); }
+.chip.opp { background: linear-gradient(135deg, var(--opp), var(--opp2)); }
 .led { font-size: 15px; margin: 4px 0 6px 26px; }
 .ledBright { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.8); }
 .ledDim { color: #6f7f7a; }
@@ -49,7 +50,7 @@ h1 { margin: 0; font-size: 34px; letter-spacing: 0.5px; }
 .bar { height: 10px; background: #0f1715; border-radius: 6px; overflow: hidden; }
 .fill { height: 100%; border-radius: 6px; }
 .fill.model { background: var(--model); }
-.fill.opp { background: var(--opp); }
+.fill.opp { background: linear-gradient(90deg, var(--opp2), var(--opp)); }
 .think { display: flex; align-items: baseline; justify-content: space-between; margin-top: 4px; font-size: 16px; }
 .num { font-family: "Cascadia Mono", Consolas, monospace; font-weight: 700; font-size: 34px; }
 .num.model { color: var(--model); }
@@ -88,7 +89,7 @@ body.film #sum, body.film .caption { display: none !important; }
 body.film .filmBand { display: flex; }
 .filmBand { display: none; position: absolute; left: 40px; right: 40px; bottom: 22px; justify-content: space-between; align-items: flex-end; pointer-events: none; }
 .filmBand .card { width: 330px; }
-.filmBand .hole { flex: 1; margin: 0 24px; height: 150px; border: 1px dashed transparent; }
+.filmBand .hole { flex: 1; margin: 0 24px; height: 150px; border: 1px dashed transparent; color: transparent; }
 body.film.setup .filmBand .hole { border-color: var(--line); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 15px; }
 .legendRow { display: flex; align-items: center; gap: 10px; font-size: 17px; margin: 4px 0; }
 .ledDot { width: 16px; height: 16px; border-radius: 4px; }

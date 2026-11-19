@@ -98,6 +98,12 @@ python pc/build_deck.py
 python pc/render_video.py --story film/story.json --out replays/demo.mp4
 ```
 
+### 拍 LED（大模型一步要 10～80 秒，所以用「實機重播」拍）
+
+`python pc/film_studio.py` 後打開 http://localhost:8800 ：選一局按「重播」，板子用「真人」模式照紀錄送出大模型當時的每一步，
+板上模型在板子上**重新推論**，播完逐步比對動作跟原對局是否完全一樣（固定策略，所以應該一樣）；螢幕上顯示的是原對局的思考時間，並標示「實機重播・快轉 ×N」。
+「即時對局」則是板子現場打規則 AI，沒有任何重播。
+
 沒有接板子也能測：`PYTHONPATH=pc/fake_arduino PORT=7100 python board-app/python/main.py` 會在筆電上跑一個假板子。
 
 ## 檔案
@@ -108,7 +114,8 @@ python pc/render_video.py --story film/story.json --out replays/demo.mp4
 | `test_rules.py`、`test_board_core.py` | 規則測試、板上版一致性測試 |
 | `board-app/` | UNO Q 的 App（Python + Arduino sketch + 網頁） |
 | `pc/llm_bridge.py` | 筆電端：把盤面送給大模型、回傳一步、記錄每一局；板子重開會自動救援、`--resume` 接續 |
-| `pc/film_session.py` | 拍 LED：用鏡頭錄影，同時記下每一步的時間（之後跟重播對齊） |
+| `pc/film_studio.py` | LED 拍攝台（http://localhost:8800）：讓板子照紀錄重播大模型對局、螢幕同步顯示；也能開一局即時的規則 AI 對局 |
+| `pc/film_session.py` | 用筆電鏡頭錄 LED，同時記下每一步的時間（之後跟重播對齊） |
 | `pc/summary.py`、`pc/export_scene.py`、`pc/replay_web/` | 戰績統計、匯出重播、重播網頁 |
 | `pc/build_deck.py`、`pc/render_video.py` | 產生投影片 PDF、剪 demo 影片 |
 | `logs/games.jsonl` | 正式對局紀錄（一行一局） |

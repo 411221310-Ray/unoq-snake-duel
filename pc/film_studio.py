@@ -25,10 +25,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PORT = int(os.environ.get("PORT", "8800"))
 BOARD = os.environ.get("BOARD_URL", "http://localhost:7000")
 GAMES = pathlib.Path(os.environ.get("GAMES_LOG", ROOT / "logs/games.jsonl"))
-LOG = ROOT / "logs/overnight.log"
+LOG = pathlib.Path(os.environ.get("OVERNIGHT_LOG", ROOT / "logs/overnight.log"))
 BASE_SEED = 20261120
 
-follow = {"state": "idle", "game_id": None, "step": 0, "step_sec": 0.5, "left": 0, "msg": ""}
+follow = {"state": "idle", "game_id": None, "step": 0, "step_sec": 0.5, "left": 0, "msg": "", "live": None}
 busy_lock = threading.Lock()
 
 
@@ -118,6 +118,74 @@ def replay_job(rec: dict, step_sec: float):
         busy_lock.release()
 
 
+def snap_to_frame(s: dict) -> dict:
+    """板子送來的盤面（body 是 2×H×W 的數字）→ 重播網頁用的格式（每條蛇從頭排到尾）。"""
+    snakes = []
+    for side in (0, 1):
+        cells = [(v, y, x) for y, row in enumerate(s["body"][side]) for x, v in enumerate(row) if v > 0]
+        snakes.append([[y, x] for v, y, x in sorted(cells, reverse=True)])
+    return {"t": s["t"], "snakes": snakes, "food": s["food"], "len": s["length"], "hp": s["health"],
+            "head": s["head"], "dead": None}
+
+
+def live_job(games: int, delay: float):
+    """規則 AI 即時對局：板子現場打，螢幕跟著板子每一步更新。"""
+    done = threading.Event()
+    sio = socketio.Client(reconnection=False)
+    live = {"model_side": 0, "frames": [], "timing": [], "result": None, "cause": [None, None], "game": 0}
+
+    @sio.on("state")
+    def on_state(s):
+        ser = s.get("series") or {}
+        if ser.get("opponent") != "rule":
+            return
+        if ser.get("index") != live["game"]:                 # 新的一局
+            live.update(game=ser.get("index"), frames=[], timing=[], result=None, cause=[None, None])
+        live["model_side"] = s["model_side"]
+        fr = snap_to_frame(s)
+        if live["frames"] and live["frames"][-1]["t"] == fr["t"]:
+            return
+        info = s.get("info") or {}
+        if live["frames"]:
+            live["timing"].append({"m": info.get("model_ms", 0), "o": info.get("opp_ms", 0)})
+        live["frames"].append(fr)
+        follow.update(state="live", live=dict(live, frames=live["frames"][-1:], n=len(live["frames"])))
+
+    @sio.on("game_over")
+    def on_over(r):
+        if r.get("opponent") != "rule":
+            return
+        live.update(result=r["result_model"], cause=r["cause"])
+        if live["frames"]:
+            live["frames"][-1]["dead"] = [c is not None for c in r["cause"]]
+        follow.update(live=dict(live, frames=live["frames"][-1:], n=len(live["frames"])))
+        with open(ROOT / "film/live_rule.jsonl", "a", encoding="utf-8") as f:
+            f.write(json.dumps({**r, "valid": True, "saved_at": time.strftime("%Y-%m-%d %H:%M:%S")}, ensure_ascii=False) + chr(10))
+
+    @sio.on("series_done")
+    def on_done(s):
+        if s.get("opponent") == "rule":
+            done.set()
+
+    try:
+        sio.connect(BOARD, transports=["websocket", "polling"])
+        for left in (3, 2, 1):
+            follow.update(state="countdown", left=left, game_id=None)
+            time.sleep(1)
+        follow.update(state="live", live=None)
+        sio.emit("start_series", {"opponent": "rule", "games": games, "delay": delay})
+        if not done.wait(timeout=60 + games * 300 * (delay + 0.1)):
+            raise TimeoutError("板子沒有回應（可能有別的對局在跑）")
+        time.sleep(0.5)
+        follow.update(state="done", msg="即時對局打完了")
+    except Exception as e:  # noqa: BLE001
+        follow.update(state="error", msg=f"即時對局失敗：{e}")
+    finally:
+        if sio.connected:
+            sio.disconnect()
+        busy_lock.release()
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *a, **kw):
         super().__init__(*a, directory=str(ROOT / "pc/replay_web"), **kw)
@@ -167,6 +235,16 @@ class Handler(SimpleHTTPRequestHandler):
             step = max(0.25, min(2.0, float(data.get("step_sec", 0.5))))
             follow.update(state="countdown", game_id=rec["game_id"], step=0, step_sec=step, left=3, msg="")
             threading.Thread(target=replay_job, args=(rec, step), daemon=True).start()
+            return self._json({"ok": True})
+        if path == "/live":
+            b = bridge_busy()
+            if b:
+                return self._json({"ok": False, "msg": f"板子正在打：{b}。等這組打完（或在等額度時）再開。"})
+            if not busy_lock.acquire(blocking=False):
+                return self._json({"ok": False, "msg": "已經在播了"})
+            delay = max(0.15, min(2.0, float(data.get("step_sec", 0.35))))
+            follow.update(state="countdown", left=3, game_id=None, live=None, step=0, step_sec=delay, msg="")
+            threading.Thread(target=live_job, args=(int(data.get("games", 1)), delay), daemon=True).start()
             return self._json({"ok": True})
         return self._json({"ok": False, "msg": "not found"}, 404)
 

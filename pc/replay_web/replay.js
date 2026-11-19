@@ -7,6 +7,13 @@ const ctx = canvas.getContext("2d");
 const css = getComputedStyle(document.documentElement);
 const C = (n) => css.getPropertyValue(n).trim();
 const CAUSE = { wall: "撞牆", body: "撞到身體", head: "頭撞頭", starved: "餓死" };
+// 每個玩家的造型：板上模型青綠（LED 眼）、Gemini 藍紫漸層、Claude 陶土橘、規則 AI 琥珀黃
+const STYLE = {
+  model: { head: "#3fe0c8", tail: "#1b8577", label: "板上模型", led: true },
+  rule: { head: "#f2c14e", tail: "#b5832a", label: "規則 AI" },
+  gemini: { head: "#5b8dff", tail: "#a96bff", label: "Gemini" },
+  opus: { head: "#ec8a62", tail: "#b9532f", label: "Claude" },
+};
 
 function fmtMs(ms) {
   if (ms == null) return "–";
@@ -16,9 +23,14 @@ function fmtMs(ms) {
   return `${m} 分 ${s} 秒`;
 }
 
-function mix(a, b, t) {
-  const pa = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16)), pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
-  return `rgb(${pa.map((v, i) => Math.round(v * t + pb[i] * (1 - t))).join(",")})`;
+function toRgb(c) {
+  c = c.trim();
+  if (c.startsWith("#")) return [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+  return c.match(/\d+/g).slice(0, 3).map(Number);
+}
+function mix(a, b, t) {                       // a、b 可以是 #rrggbb 或 rgb()，回傳 #rrggbb
+  const pa = toRgb(a), pb = toRgb(b);
+  return "#" + pa.map((v, i) => Math.round(v * t + pb[i] * (1 - t)).toString(16).padStart(2, "0")).join("");
 }
 
 function drawBoard(g, fr) {
@@ -37,34 +49,59 @@ function drawBoard(g, fr) {
     ctx.beginPath(); ctx.arc(cx, cy, cs * 0.26, 0, Math.PI * 2); ctx.fill();
     ctx.shadowBlur = 0;
   }
-  // 先畫對手、再畫模型；身體從尾巴漸層到頭
+  // 先畫對手、再畫模型；每個玩家有自己的顏色（頭→尾漸層）、眼睛和名牌，一眼分得出誰是誰
+  const tags = [];
   for (const side of [1 - g.modelSide, g.modelSide]) {
     const cells = fr.snakes[side];
-    const col = side === g.modelSide ? C("--model") : C("--opp");
+    const st = side === g.modelSide ? STYLE.model : (STYLE[g.opponent] || STYLE.rule);
     const n = cells.length;
+    const colAt = (i) => mix(mix(st.head, st.tail, 1 - i / Math.max(n - 1, 1)), C("--cell"), 0.55 + 0.45 * (1 - i / Math.max(n, 1)));
     for (let i = n - 1; i >= 0; i--) {
       const [y, x] = cells[i];
       const p = cs * 0.08;
-      ctx.fillStyle = mix(col, C("--cell"), 0.4 + 0.6 * (1 - i / Math.max(n, 1)));  // 不用透明度，接縫才不會疊出深色塊
-      if (i === 0) { ctx.shadowColor = col; ctx.shadowBlur = 22; }
-      ctx.beginPath(); ctx.roundRect(x * cs + p, y * cs + p, cs - 2 * p, cs - 2 * p, cs * 0.22); ctx.fill();
+      ctx.fillStyle = colAt(i);                                   // 不用透明度，接縫才不會疊出深色塊
+      if (i === 0) { ctx.shadowColor = st.head; ctx.shadowBlur = 26; }
+      ctx.beginPath(); ctx.roundRect(x * cs + p, y * cs + p, cs - 2 * p, cs - 2 * p, i === 0 ? cs * 0.34 : cs * 0.22); ctx.fill();
       ctx.shadowBlur = 0;
-      // 相鄰兩節之間補一塊，讓身體連起來
-      if (i + 1 < n) {
+      if (i + 1 < n) {                                            // 相鄰兩節之間補一塊，讓身體連起來
         const [y2, x2] = cells[i + 1];
         if (Math.abs(y2 - y) + Math.abs(x2 - x) === 1) {
           const mx = Math.min(x, x2), my = Math.min(y, y2);
           const wdt = x !== x2 ? cs : cs - 2 * p * 2, hgt = y !== y2 ? cs : cs - 2 * p * 2;
+          ctx.fillStyle = colAt(i + 0.5);
           ctx.fillRect(mx * cs + (x !== x2 ? cs / 2 : p * 2), my * cs + (y !== y2 ? cs / 2 : p * 2), wdt, hgt);
         }
       }
     }
-    ctx.globalAlpha = 1;
-    if (n) {
-      const [hy, hx] = cells[0];
-      ctx.fillStyle = "#0d1412";
-      ctx.beginPath(); ctx.arc((hx + 0.5) * cs, (hy + 0.5) * cs, cs * 0.11, 0, Math.PI * 2); ctx.fill();
+    if (!n) continue;
+    // 眼睛：朝前進方向
+    const [hy, hx] = cells[0];
+    let dy = 0, dx = 1;
+    if (n > 1) { dy = hy - cells[1][0]; dx = hx - cells[1][1]; }
+    const cx = (hx + 0.5) * cs, cy = (hy + 0.5) * cs;
+    for (const sgn of [-1, 1]) {
+      const ex = cx + dx * cs * 0.12 + -dy * sgn * cs * 0.18, ey = cy + dy * cs * 0.12 + dx * sgn * cs * 0.18;
+      if (st.led) {                                               // 板上模型：發光的 LED 眼
+        ctx.fillStyle = "#ffffff"; ctx.shadowColor = "#bff7ff"; ctx.shadowBlur = 14;
+        ctx.beginPath(); ctx.arc(ex, ey, cs * 0.075, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      } else {
+        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(ex, ey, cs * 0.09, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#0d1412"; ctx.beginPath(); ctx.arc(ex + dx * cs * 0.03, ey + dy * cs * 0.03, cs * 0.045, 0, Math.PI * 2); ctx.fill();
+      }
     }
+    tags.push({ x: cx, y: hy, cy, label: st.label, col: st.head });
+  }
+  // 名牌：畫在頭的上方（頭在最上面一列就畫在下方）
+  ctx.font = `700 ${Math.round(cs * 0.3)}px "Microsoft JhengHei", sans-serif`;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const t of tags) {
+    const w = ctx.measureText(t.label).width + cs * 0.3, h = cs * 0.46;
+    const tx = Math.min(Math.max(t.x, w / 2 + 4), canvas.width - w / 2 - 4);
+    const ty = t.y === 0 ? t.cy + cs * 0.82 : t.cy - cs * 0.82;
+    ctx.fillStyle = t.col; ctx.globalAlpha = 0.95;
+    ctx.beginPath(); ctx.roundRect(tx - w / 2, ty - h / 2, w, h, h / 2); ctx.fill();
+    ctx.globalAlpha = 1; ctx.fillStyle = "#081210";
+    ctx.fillText(t.label, tx, ty + 1);
   }
   if (fr.dead) {
     for (const side of [0, 1]) {
@@ -98,6 +135,9 @@ function show(gi, k, o = {}) {
   const sc = scoreBefore(gi);
   const end = k === g.frames.length - 1;
   if (end) sc[g.result > 0 ? "win" : g.result < 0 ? "loss" : "draw"]++;
+  const ost = STYLE[g.opponent] || STYLE.rule;
+  document.documentElement.style.setProperty("--opp", ost.head);
+  document.documentElement.style.setProperty("--opp2", ost.tail);
   $("title").textContent = `板上模型 vs ${g.oppName}`;
   $("subtitle").textContent = o.subtitle ?? `第 ${sc.n + 1} / ${sc.total} 局　·　比分（模型角度）勝 ${sc.win} 平 ${sc.draw} 負 ${sc.loss}`;
   $("nameOpp").textContent = g.oppName;
@@ -226,6 +266,7 @@ if (document.body.classList.contains("film")) {
       const cnt = $("count");
       if (f.state === "countdown") { cnt.textContent = f.left; cnt.classList.add("on"); } else cnt.classList.remove("on");
       if (g && ["countdown", "playing", "done"].includes(f.state)) show(idx[f.game_id], f.step, optsFor(g, f.step, f.step_sec));
+      if (!f.game_id && f.live) showLive(f.live, f.state === "done" || f.live.result !== null);
       if (f.state === "done" || f.state === "error") {
         if (!doneAt) doneAt = Date.now();
         if (Date.now() - doneAt > 6000 || f.state === "error") {
@@ -236,6 +277,34 @@ if (document.body.classList.contains("film")) {
       }
     } catch (e) { /* 拍攝台沒開：留在設定畫面 */ }
   }
+  // 即時對局：板子現場打規則 AI，網頁畫板子傳來的最新盤面
+  let liveIdx = -1;
+  function showLive(L, finished) {
+    if (liveIdx < 0) {
+      S.games.push({ id: "live", opponent: "rule", oppName: "規則 AI", index: 0, modelSide: 0, result: 0,
+        cause: [null, null], group: "live", frames: [], timing: [] });
+      liveIdx = S.games.length - 1;
+    }
+    const g = S.games[liveIdx];
+    const fr = L.frames[L.frames.length - 1];
+    if (!fr) return;
+    g.modelSide = L.model_side;
+    g.frames = Array(L.n).fill(fr);
+    g.timing = L.timing.slice(0, L.n - 1);
+    while (g.timing.length < L.n - 1) g.timing.push({ m: 0, o: 0 });
+    g.result = L.result ?? 0;
+    g.cause = L.cause || [null, null];
+    show(liveIdx, L.n - 1, { badge: "LED 即時對局 · 沒有快轉", banner: finished && L.result !== null ? undefined : false,
+      subtitle: `第 ${L.game} 局　·　板子現場推論，每一步都是現在算的` });
+  }
+  $("filmLive").onclick = async () => {
+    const r = await fetch("/live", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ games: 1, step_sec: 0.35 }) }).then((x) => x.json()).catch(() => ({ ok: false, msg: "連不到拍攝台：請先執行 python pc/film_studio.py" }));
+    if (!r.ok) { $("filmMsg").textContent = r.msg || "開不了"; return; }
+    document.body.classList.remove("setup");
+    doneAt = 0;
+    polling = setInterval(poll, 80);
+  };
   $("filmGo").onclick = async () => {
     const r = await fetch("/replay", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ game_id: fsel.value, step_sec: +$("filmStep").value }) }).then((x) => x.json()).catch(() => ({ ok: false, msg: "連不到拍攝台：請先執行 python pc/film_studio.py" }));

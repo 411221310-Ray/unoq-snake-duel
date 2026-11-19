@@ -68,7 +68,8 @@
   <h3>LED 實機重播</h3>
   <div class="row2"><select id="filmGame"></select></div>
   <div class="row2"><label>每步 <input id="filmStep" type="number" min="0.25" max="2" step="0.05" value="0.5"> 秒</label></div>
-  <button class="go" id="filmGo">開始（倒數 3 秒）</button>
+  <button class="go" id="filmGo">重播這局（倒數 3 秒）</button>
+  <button class="go" id="filmLive" style="background:var(--panel);color:var(--ink);border:1px solid var(--line)">改打一局即時的：板上模型 vs 規則 AI</button>
   <small id="filmMsg">選一局，按開始：板子照紀錄重播這局，螢幕同步顯示。播完會自動回到這裡。按 F11 全螢幕。</small>
 </div>
 <div id="count"></div>
