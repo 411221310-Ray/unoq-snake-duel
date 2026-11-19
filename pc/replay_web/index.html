@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>貪食蛇 AI 對戰重播</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <header>
+    <div class="titles">
+      <h1 id="title">板上模型 vs 對手</h1>
+      <div id="subtitle" class="muted">第 1 局</div>
+    </div>
+    <div id="badge" class="badge">重播</div>
+  </header>
+
+  <section class="boardWrap">
+    <canvas id="board" width="1352" height="832"></canvas>
+    <div id="banner" class="banner hidden"></div>
+    <div class="boardFoot">
+      <span id="stepText">第 0 / 300 步</span>
+      <span id="clockText" class="muted"></span>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="card" id="cardModel">
+      <div class="who"><i class="chip model"></i><b id="nameModel">板上模型</b><span class="tag">Arduino UNO Q · 193 萬參數</span></div>
+      <div class="led muted">LED 上：<b class="ledBright">亮的那條</b></div>
+      <div class="row"><span>長度 <b id="lenModel">3</b></span><span class="muted">飢餓值</span><div class="bar"><div id="hpModel" class="fill model"></div></div></div>
+      <div class="think"><span class="muted">這一步想了</span><span id="msModel" class="num model">–</span></div>
+    </div>
+    <div class="card" id="cardOpp">
+      <div class="who"><i class="chip opp"></i><b id="nameOpp">對手</b><span id="tagOpp" class="tag">雲端</span></div>
+      <div class="led muted">LED 上：<b class="ledDim">暗的那條</b></div>
+      <div class="row"><span>長度 <b id="lenOpp">3</b></span><span class="muted">飢餓值</span><div class="bar"><div id="hpOpp" class="fill opp"></div></div></div>
+      <div class="think"><span class="muted">這一步想了</span><span id="msOpp" class="num opp">–</span></div>
+    </div>
+    <div id="pip" class="pip hidden"><span>LED 實拍</span></div>
+    <div id="sum" class="card sum">
+      <div class="muted">這一局累計思考時間</div>
+      <div class="sumRow"><i class="chip model"></i><span>板上模型</span><b id="sumModel" class="num model">0 ms</b></div>
+      <div class="sumRow"><i class="chip opp"></i><span id="sumOppName">對手</span><b id="sumOpp" class="num opp">0 ms</b></div>
+      <div id="ratio" class="ratio muted"></div>
+    </div>
+  </aside>
+
+  <div id="caption" class="caption hidden"></div>
+  <div class="filmBand">
+    <div class="card">
+      <div class="muted" style="font-size:14px">LED 矩陣上</div>
+      <div class="legendRow"><i class="ledDot bright"></i><span>亮的那條 = <b class="model">板上模型</b></span></div>
+      <div class="legendRow"><i class="ledDot dim"></i><span>暗的那條 = <b class="opp" id="bandOpp">對手</b></span></div>
+    </div>
+    <div class="hole">板子擺這裡</div>
+    <div class="card" id="bandSum">
+      <div class="muted" style="font-size:14px">這一局累計思考時間</div>
+      <div class="sumRow"><i class="chip model"></i><span>板上模型</span><b id="bandSumModel" class="num model" style="font-size:24px">0 ms</b></div>
+      <div class="sumRow"><i class="chip opp"></i><span id="bandSumOppName">對手</span><b id="bandSumOpp" class="num opp" style="font-size:24px">0 ms</b></div>
+    </div>
+  </div>
+</div></div>
+
+<div id="filmCtl">
+  <h3>LED 實機重播</h3>
+  <div class="row2"><select id="filmGame"></select></div>
+  <div class="row2"><label>每步 <input id="filmStep" type="number" min="0.25" max="2" step="0.05" value="0.5"> 秒</label></div>
+  <button class="go" id="filmGo">開始（倒數 3 秒）</button>
+  <small id="filmMsg">選一局，按開始：板子照紀錄重播這局，螢幕同步顯示。播完會自動回到這裡。按 F11 全螢幕。</small>
+</div>
+<div id="count"></div>
+
+<div id="controls">
+  <select id="gameSel"></select>
+  <button id="playBtn">播放</button>
+  <input id="scrub" type="range" min="0" max="0" value="0">
+  <label>速度 <select id="speedSel"><option value="0.12">快</option><option value="0.3" selected>中</option><option value="0.7">慢</option></select></label>
+</div>
+
+<script src="scene.js"></script>
+<script src="replay.js"></script>
+</body>
+</html>

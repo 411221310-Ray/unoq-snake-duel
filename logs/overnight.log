@@ -1,0 +1,204 @@
+C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (7.4.0.post2)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+21:40:19 已連上板子 http://localhost:7000
+21:40:19 == 模型 vs rule：從第 1 局開始打 100 局（還要 100 局） ==
+21:40:21 [一局結束] 模型 vs 規則 AI：模型贏（29 步）
+21:40:25 [一局結束] 模型 vs 規則 AI：模型贏（25 步）
+21:40:31 [一局結束] 模型 vs 規則 AI：模型贏（62 步）
+21:40:36 [一局結束] 模型 vs 規則 AI：模型贏（32 步）
+21:40:41 [一局結束] 模型 vs 規則 AI：模型贏（26 步）
+21:40:45 [一局結束] 模型 vs 規則 AI：模型贏（23 步）
+21:40:50 [一局結束] 模型 vs 規則 AI：模型贏（25 步）
+21:40:55 [一局結束] 模型 vs 規則 AI：模型贏（36 步）
+21:40:59 [一局結束] 模型 vs 規則 AI：模型贏（14 步）
+21:41:05 [一局結束] 模型 vs 規則 AI：模型贏（61 步）
+21:41:10 [一局結束] 模型 vs 規則 AI：模型贏（38 步）
+21:41:15 [一局結束] 模型 vs 規則 AI：模型贏（45 步）
+21:41:20 [一局結束] 模型 vs 規則 AI：模型贏（28 步）
+21:41:26 [一局結束] 模型 vs 規則 AI：模型贏（68 步）
+21:41:31 [一局結束] 模型 vs 規則 AI：模型贏（22 步）
+21:41:37 [一局結束] 模型 vs 規則 AI：模型贏（68 步）
+21:41:42 [一局結束] 模型 vs 規則 AI：模型贏（32 步）
+21:41:47 [一局結束] 模型 vs 規則 AI：模型贏（58 步）
+21:41:52 [一局結束] 模型 vs 規則 AI：模型贏（15 步）
+21:41:56 [一局結束] 模型 vs 規則 AI：模型贏（15 步）
+21:42:01 [一局結束] 模型 vs 規則 AI：模型贏（38 步）
+21:42:06 [一局結束] 模型 vs 規則 AI：模型贏（31 步）
+21:42:13 [一局結束] 模型 vs 規則 AI：模型贏（91 步）
+21:42:17 [一局結束] 模型 vs 規則 AI：模型贏（19 步）
+21:42:22 [一局結束] 模型 vs 規則 AI：模型贏（26 步）
+21:42:27 [一局結束] 模型 vs 規則 AI：模型贏（57 步）
+21:42:32 [一局結束] 模型 vs 規則 AI：模型贏（35 步）
+21:42:38 [一局結束] 模型 vs 規則 AI：模型贏（53 步）
+21:42:43 [一局結束] 模型 vs 規則 AI：模型贏（35 步）
+21:42:49 [一局結束] 模型 vs 規則 AI：模型贏（69 步）
+21:42:54 [一局結束] 模型 vs 規則 AI：模型贏（40 步）
+21:43:01 [一局結束] 模型 vs 規則 AI：模型贏（87 步）
+21:43:06 [一局結束] 模型 vs 規則 AI：模型贏（37 步）
+21:43:11 [一局結束] 模型 vs 規則 AI：模型贏（43 步）
+21:43:16 [一局結束] 模型 vs 規則 AI：模型贏（29 步）
+21:43:23 [一局結束] 模型 vs 規則 AI：模型贏（80 步）
+21:43:27 [一局結束] 模型 vs 規則 AI：模型贏（16 步）
+21:43:32 [一局結束] 模型 vs 規則 AI：模型贏（34 步）
+21:43:36 [一局結束] 模型 vs 規則 AI：模型贏（9 步）
+21:43:42 [一局結束] 模型 vs 規則 AI：模型贏（59 步）
+21:43:46 [一局結束] 模型 vs 規則 AI：模型贏（10 步）
+21:43:50 [一局結束] 模型 vs 規則 AI：模型輸（10 步）
+21:43:55 [一局結束] 模型 vs 規則 AI：模型贏（39 步）
+21:43:59 [一局結束] 模型 vs 規則 AI：模型贏（20 步）
+21:44:06 [一局結束] 模型 vs 規則 AI：模型贏（82 步）
+21:44:11 [一局結束] 模型 vs 規則 AI：模型贏（45 步）
+21:44:17 [一局結束] 模型 vs 規則 AI：模型贏（48 步）
+21:44:22 [一局結束] 模型 vs 規則 AI：模型贏（54 步）
+21:44:26 [一局結束] 模型 vs 規則 AI：模型贏（11 步）
+21:44:32 [一局結束] 模型 vs 規則 AI：模型贏（45 步）
+21:44:37 [一局結束] 模型 vs 規則 AI：模型贏（33 步）
+21:44:43 [一局結束] 模型 vs 規則 AI：模型贏（79 步）
+21:44:49 [一局結束] 模型 vs 規則 AI：模型贏（54 步）
+21:44:53 [一局結束] 模型 vs 規則 AI：模型贏（24 步）
+21:44:58 [一局結束] 模型 vs 規則 AI：模型贏（31 步）
+21:45:03 [一局結束] 模型 vs 規則 AI：模型贏（42 步）
+21:45:09 [一局結束] 模型 vs 規則 AI：模型贏（40 步）
+21:45:13 [一局結束] 模型 vs 規則 AI：模型贏（13 步）
+21:45:17 [一局結束] 模型 vs 規則 AI：模型贏（18 步）
+21:45:21 [一局結束] 模型 vs 規則 AI：模型贏（14 步）
+21:45:27 [一局結束] 模型 vs 規則 AI：模型贏（49 步）
+21:45:31 [一局結束] 模型 vs 規則 AI：模型贏（17 步）
+21:45:37 [一局結束] 模型 vs 規則 AI：模型贏（55 步）
+21:45:44 [一局結束] 模型 vs 規則 AI：模型贏（107 步）
+21:45:49 [一局結束] 模型 vs 規則 AI：模型贏（40 步）
+21:45:54 [一局結束] 模型 vs 規則 AI：模型贏（15 步）
+21:46:05 [一局結束] 模型 vs 規則 AI：模型贏（218 步）
+21:46:13 [一局結束] 模型 vs 規則 AI：模型贏（110 步）
+21:46:19 [一局結束] 模型 vs 規則 AI：模型贏（53 步）
+21:46:25 [一局結束] 模型 vs 規則 AI：模型贏（60 步）
+21:46:29 [一局結束] 模型 vs 規則 AI：模型贏（26 步）
+21:46:35 [一局結束] 模型 vs 規則 AI：模型贏（55 步）
+21:46:39 [一局結束] 模型 vs 規則 AI：模型贏（18 步）
+21:46:45 [一局結束] 模型 vs 規則 AI：模型贏（56 步）
+21:46:50 [一局結束] 模型 vs 規則 AI：模型平（39 步）
+21:46:54 [一局結束] 模型 vs 規則 AI：模型贏（18 步）
+21:46:59 [一局結束] 模型 vs 規則 AI：模型贏（46 步）
+21:47:05 [一局結束] 模型 vs 規則 AI：模型贏（61 步）
+21:47:10 [一局結束] 模型 vs 規則 AI：模型贏（29 步）
+21:47:16 [一局結束] 模型 vs 規則 AI：模型贏（55 步）
+21:47:20 [一局結束] 模型 vs 規則 AI：模型贏（25 步）
+21:47:26 [一局結束] 模型 vs 規則 AI：模型贏（51 步）
+21:47:31 [一局結束] 模型 vs 規則 AI：模型贏（30 步）
+21:47:35 [一局結束] 模型 vs 規則 AI：模型平（9 步）
+21:47:41 [一局結束] 模型 vs 規則 AI：模型贏（65 步）
+21:47:46 [一局結束] 模型 vs 規則 AI：模型贏（32 步）
+21:47:52 [一局結束] 模型 vs 規則 AI：模型贏（81 步）
+21:47:59 [一局結束] 模型 vs 規則 AI：模型贏（94 步）
+21:48:04 [一局結束] 模型 vs 規則 AI：模型贏（39 步）
+21:48:12 [一局結束] 模型 vs 規則 AI：模型贏（99 步）
+21:48:17 [一局結束] 模型 vs 規則 AI：模型贏（32 步）
+21:48:21 [一局結束] 模型 vs 規則 AI：模型輸（11 步）
+21:48:27 [一局結束] 模型 vs 規則 AI：模型贏（75 步）
+21:48:35 [一局結束] 模型 vs 規則 AI：模型贏（123 步）
+21:48:41 [一局結束] 模型 vs 規則 AI：模型贏（44 步）
+21:48:46 [一局結束] 模型 vs 規則 AI：模型贏（35 步）
+21:48:50 [一局結束] 模型 vs 規則 AI：模型贏（16 步）
+21:48:55 [一局結束] 模型 vs 規則 AI：模型贏（51 步）
+21:49:01 [一局結束] 模型 vs 規則 AI：模型贏（40 步）
+21:49:06 [一局結束] 模型 vs 規則 AI：模型輸（36 步）
+21:49:08 [這組結束] 模型 vs 規則 AI：勝 95 平 2 負 3
+21:49:08 == 模型 vs gemini：從第 1 局開始打 2 局（還要 6 局） ==
+21:49:51   gemini 第   0 步 → LEFT（42.2 秒）
+21:50:30   gemini 第   1 步 → LEFT（38.6 秒）
+21:51:17   gemini 第   2 步 → DOWN（47.0 秒）
+21:51:55   gemini 第   3 步 → DOWN（38.1 秒）
+21:52:47   gemini 第   4 步 → LEFT（52.1 秒）
+21:52:47 [一局結束] 模型 vs Gemini 4 Neon：模型平（5 步）
+21:53:05   gemini 第   0 步 → RIGHT（13.6 秒）
+21:53:18   gemini 第   1 步 → RIGHT（13.6 秒）
+21:53:42   gemini 第   2 步 → RIGHT（23.9 秒）
+21:54:04   gemini 第   3 步 → RIGHT（22.2 秒）
+21:54:48   gemini 第   4 步 → RIGHT（43.1 秒）
+21:54:48 [一局結束] 模型 vs Gemini 4 Neon：模型平（5 步）
+21:54:50 [這組結束] 模型 vs Gemini 4 Neon：勝 0 平 2 負 0
+21:54:50 == 模型 vs opus：從第 1 局開始打 2 局（還要 6 局） ==
+21:54:54 opus 額度用完，4.3 小時後重置 → 這局作廢，先停下來
+21:54:54   opus 第   0 步 → None（3.3 秒）
+21:54:54 [這組結束] 模型 vs Claude Opus 5.5：勝 0 平 0 負 0
+21:54:54 == 模型 vs gemini：從第 3 局開始打 2 局（還要 4 局） ==
+21:55:08   gemini 第   0 步 → LEFT（12.2 秒）
+21:55:20   gemini 第   1 步 → LEFT（12.3 秒）
+21:55:47   gemini 第   2 步 → UP（26.6 秒）
+21:56:18   gemini 第   3 步 → UP（31.7 秒）
+21:56:34   gemini 第   4 步 → RIGHT（15.6 秒）
+21:56:48   gemini 第   5 步 → RIGHT（13.9 秒）
+21:57:36   gemini 第   6 步 → UP（47.8 秒）
+21:58:38   gemini 第   7 步 → LEFT（61.7 秒）
+21:58:44 跟板子斷線，自動重連中…
+Exception in thread Thread-5025 (answer):
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1038, in _bootstrap_inner
+    self.run()
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 975, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\user\Downloads\snake-duel\pc\llm_bridge.py", line 142, in answer
+    sio.emit("llm_move", msg)
+  File "C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\site-packages\socketio\client.py", line 226, in emit
+    raise exceptions.BadNamespaceError(
+socketio.exceptions.BadNamespaceError: / is not a connected namespace.
+22:00:34 已連上板子 http://localhost:7000
+22:09:32 停掉卡住的舊 bridge（PID 18772，板子 21:58 重開後它在等一組已經不存在的對局）
+22:13:43 == 改版的 bridge 重新開始（--resume 接續）==
+C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (7.4.0.post2)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+22:13:46 已連上板子 http://localhost:7000
+22:13:46 接續：gemini 已經有 2 局有效，從第 3 局開始，還要 4 局
+22:13:46 接續：opus 已經有 0 局有效，從第 1 局開始，還要 6 局
+22:13:46 == 模型 vs gemini：從第 3 局開始打 2 局（還要 4 局） ==
+22:14:01   gemini 第   0 步 → LEFT（13.5 秒）
+22:14:12   gemini 第   1 步 → LEFT（11.8 秒）
+22:14:32   gemini 第   2 步 → UP（19.1 秒）
+22:15:20   gemini 第   3 步 → UP（48.3 秒）
+22:15:32   gemini 第   4 步 → RIGHT（11.9 秒）
+22:15:46   gemini 第   5 步 → RIGHT（14.4 秒）
+22:16:20   gemini 第   6 步 → UP（34.0 秒）
+22:16:51   gemini 第   7 步 → LEFT（31.0 秒）
+22:17:32   gemini 第   8 步 → UP（41.0 秒）
+22:17:59   gemini 第   9 步 → LEFT（26.3 秒）
+22:18:32   gemini 第  10 步 → LEFT（33.4 秒）
+22:19:47   gemini 第  11 步 → LEFT（74.3 秒）
+22:20:18   gemini 第  12 步 → LEFT（31.4 秒）
+22:20:52   gemini 第  13 步 → LEFT（33.5 秒）
+22:21:38   gemini 第  14 步 → LEFT（46.4 秒）
+22:23:02   gemini 第  15 步 → UP（84.1 秒）
+22:23:55   gemini 第  16 步 → RIGHT（52.8 秒）
+22:24:21   gemini 第  17 步 → RIGHT（25.5 秒）
+22:25:13   gemini 第  18 步 → DOWN（52.8 秒）
+22:25:59   gemini 第  19 步 → DOWN（45.5 秒）
+22:27:46   gemini 第  20 步 → DOWN（107.0 秒）
+22:28:28   gemini 第  21 步 → DOWN（41.8 秒）
+22:30:04   gemini 第  22 步 → LEFT（96.2 秒）
+22:31:07   gemini 第  23 步 → UP（63.2 秒）
+22:31:33   gemini 第  24 步 → UP（25.4 秒）
+22:32:18   gemini 第  25 步 → RIGHT（45.3 秒）
+22:33:29   gemini 第  26 步 → UP（70.3 秒）
+22:34:37   gemini 第  27 步 → RIGHT（68.0 秒）
+22:37:37   gemini 第  29 步 → DOWN（30.0 秒）
+22:38:35   gemini 第  30 步 → LEFT（58.0 秒）
+22:40:03   gemini 第  31 步 → LEFT（87.9 秒）
+22:40:50   gemini 第  28 步 → None（337.9 秒）
+22:41:07   gemini 第  32 步 → UP（64.4 秒）
+22:44:19   gemini 第  33 步 → RIGHT（186.6 秒）
+22:45:12   gemini 第  34 步 → RIGHT（94.9 秒）
+22:47:46   gemini 第  35 步 → DOWN（149.3 秒）
+22:48:09   gemini 第  36 步 → DOWN（27.2 秒）
+22:51:10 == 第三版 bridge：打到一半沒額度不作廢、單步上限 300 秒＋重試 5 次；板子 App 也更新（llm_timeout）==
+C:\Users\user\AppData\Local\Programs\Python\Python311\Lib\site-packages\requests\__init__.py:113: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (7.4.0.post2)/charset_normalizer (3.3.2) doesn't match a supported version!
+  warnings.warn(
+22:51:13 已連上板子 http://localhost:7000
+22:51:13 接續：gemini 已經有 2 局有效，從第 3 局開始，還要 4 局
+22:51:13 接續：opus 已經有 0 局有效，從第 1 局開始，還要 6 局
+22:51:13 == 模型 vs gemini：從第 3 局開始打 2 局（還要 4 局） ==
+22:51:26   gemini 第   0 步 → LEFT（12.6 秒）
+22:51:38   gemini 第   1 步 → LEFT（11.8 秒）
+22:51:53   gemini 第   2 步 → UP（14.6 秒）
+22:52:21   gemini 第   3 步 → UP（28.7 秒）
+22:52:35   gemini 第   4 步 → RIGHT（13.5 秒）
+22:52:46   gemini 第   5 步 → RIGHT（11.2 秒）
+22:53:32   gemini 第   6 步 → UP（46.1 秒）

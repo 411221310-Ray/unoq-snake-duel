@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>貪食蛇 AI 對戰</title>
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<header>
+  <div>
+    <p class="eyebrow">AIOT · ARDUINO UNO Q</p>
+    <h1>貪食蛇 AI 對戰</h1>
+    <p class="sub">強化學習模型在板子上推論，對手可以是規則 AI、雲端大模型或你自己。</p>
+  </div>
+  <div id="conn" class="conn off">未連線</div>
+</header>
+
+<main>
+  <section class="board-card">
+    <div class="vs">
+      <div class="side" id="sideA"><span class="dot model"></span><b id="nameA">板上模型</b><small id="metaA"></small></div>
+      <div class="mid"><span id="stepText">第 0 / 300 步</span><span id="gameText"></span></div>
+      <div class="side right" id="sideB"><b id="nameB">對手</b><small id="metaB"></small><span class="dot opp"></span></div>
+    </div>
+    <canvas id="board" width="780" height="480"></canvas>
+    <div class="timing">
+      <div><span class="lbl">板上模型這一步</span><span class="big model" id="msModel">–</span></div>
+      <div><span class="lbl" id="oppTimeLabel">對手這一步</span><span class="big opp" id="msOpp">–</span></div>
+    </div>
+    <div id="waiting" class="waiting hidden"></div>
+  </section>
+
+  <section class="side-card">
+    <h2>開始一輪</h2>
+    <label>對手
+      <select id="opponent">
+        <option value="rule">規則 AI</option>
+        <option value="gemini">Gemini 4 Neon（要開筆電橋接）</option>
+        <option value="opus">Claude Opus 5.5（要開筆電橋接）</option>
+        <option value="human">真人（方向鍵 / WASD）</option>
+        <option value="self">模型自己</option>
+      </select>
+    </label>
+    <label>局數（兩局一組，同開局換邊）<input id="games" type="number" min="2" max="200" step="2" value="10"></label>
+    <label>每步間隔（秒）<input id="delay" type="number" min="0" max="2" step="0.05" value="0.25"></label>
+    <div class="btns">
+      <button id="startBtn" class="primary">開始</button>
+      <button id="stopBtn">停止</button>
+    </div>
+    <div id="pad" class="pad hidden">
+      <button data-dir="0">↑</button>
+      <div><button data-dir="3">←</button><button data-dir="2">↓</button><button data-dir="1">→</button></div>
+    </div>
+    <p id="notice" class="notice"></p>
+
+    <h2>這一輪</h2>
+    <p id="seriesText" class="series">還沒開始</p>
+
+    <h2>累計戰績（板上模型的角度）</h2>
+    <table>
+      <thead><tr><th>對手</th><th>局</th><th>勝</th><th>平</th><th>負</th><th>模型每步</th><th>對手每步</th></tr></thead>
+      <tbody id="statsBody"><tr><td colspan="7" class="muted">還沒有對局</td></tr></tbody>
+    </table>
+
+    <h2>最近幾局</h2>
+    <ol id="history" class="history"></ol>
+  </section>
+</main>
+
+<script src="libs/socket.io.min.js"></script>
+<script src="libs/arduino.js"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>

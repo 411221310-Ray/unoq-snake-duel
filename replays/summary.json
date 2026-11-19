@@ -1,0 +1,30 @@
+{
+ "rule": {
+  "name": "規則 AI",
+  "games": 100,
+  "win": 95,
+  "draw": 2,
+  "loss": 3,
+  "model_ms": 12.33,
+  "opp_ms": 5.8,
+  "opp_ms_max": 35.5,
+  "steps": 44.4,
+  "len_model": 5.09,
+  "len_opp": 5.58,
+  "timeouts": 0
+ },
+ "gemini": {
+  "name": "Gemini 4 Neon",
+  "games": 2,
+  "win": 0,
+  "draw": 2,
+  "loss": 0,
+  "model_ms": 12.88,
+  "opp_ms": 33455.4,
+  "opp_ms_max": 52109.6,
+  "steps": 5.0,
+  "len_model": 4.0,
+  "len_opp": 4.0,
+  "timeouts": 0
+ }
+}

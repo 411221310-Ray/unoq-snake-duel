@@ -1,0 +1,6 @@
+name: 貪食蛇 AI 對戰
+icon: 🐍
+description: 在 UNO Q 上跑強化學習模型下雙人貪食蛇，跟規則 AI、雲端大模型或真人對打，對局即時顯示在 LED 矩陣和網頁上。
+
+bricks:
+  - arduino:web_ui

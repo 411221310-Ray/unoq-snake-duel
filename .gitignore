@@ -1,0 +1,14 @@
+# 大檔、本機資料、個人資料不上傳
+runs/
+film/*.mkv
+film/*.mp4
+film/*.log
+replays/_segments/
+replays/*.mp4
+*.pt.tmp
+__pycache__/
+*.pyc
+.claude/
+logs/test_*.jsonl
+REVIEW_NOTES.md
+replays/test_*
