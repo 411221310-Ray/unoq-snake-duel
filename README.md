@@ -6,7 +6,8 @@
 想回答的問題：**專門訓練的板上小模型，在需要即時決策的對戰裡，能不能贏過通用的雲端大模型？**
 比兩件事：勝率（成對對局），以及每一步要想多久。
 
-- Demo 影片：（上傳後補連結）
+- Demo 影片：（上傳後補連結）；旁白逐字稿 [`replays/demo.srt`](replays/demo.srt)，影片腳本 [`film/story.json`](film/story.json)
+  - 實拍只有一段：Claude Opus 第 5 局的**即時對局**（先原速 10 秒，再快轉 ×16）；Gemini 那局是照紀錄重新模擬的重播，畫面上都有標明
 - 投影片：[`slides/deck.pdf`](slides/deck.pdf)
 - 重播網頁：用瀏覽器直接打開 [`pc/replay_web/index.html`](pc/replay_web/index.html)，可以一步一步看每一局
 
@@ -17,13 +18,13 @@
 |---|---:|---:|---:|---:|---:|---:|---:|
 | 規則 AI | 100 | 95 | 2 | 3 | 12.3 ms | 5.8 ms | 44 |
 | Gemini 4 Neon | 6 | 4 | 2 | 0 | 13.7 ms | 48.3 秒 | 49 |
-| Claude Opus 5.5 | 1 | 1 | 0 | 0 | 12.9 ms | 11.7 秒 | 43 |
+| Claude Opus 5.5 | 6 | 6 | 0 | 0 | 13.4 ms | 11.1 秒 | 42 |
 
-- **速度**：板上模型每步約 13 ms，Gemini 平均 48 秒（約 3,500 倍）、Opus 12 秒（約 900 倍）；不用網路、不花額度。
-- **勝負**：對大模型 7 局沒輸（Gemini 4 勝 2 平、Opus 1 勝）。局數太少，只能說在這個遊戲上「專門訓練的小模型不輸通用大模型」，不能說它比較聰明。
-- **可用性**：一個晚上就碰到兩次額度上限（Gemini 打到一半暫停、Opus 整週額度用完）。要即時控制的裝置，不能每一步都等雲端。
+- **速度**：板上模型每步約 13 ms，Gemini 平均 48 秒（約 3,500 倍）、Opus 11 秒（約 830 倍）；不用網路、不花額度。
+- **勝負**：對大模型 12 局沒輸（Gemini 4 勝 2 平、Opus 6 勝）。局數少，只能說在這個遊戲上「專門訓練的小模型不輸通用大模型」，不能說它比較聰明。
+- **可用性**：一天內碰到兩次額度上限（Gemini 打到一半暫停、Opus 整週額度用完只好換管道）。要即時控制的裝置，不能每一步都等雲端。
 - **分工**：雲端負責重的訓練（A100 跑 7.9 億步），板子負責即時推論；這就是這個專題想示範的邊緣 AI。
-- **下一步**：讓模型避開一樣長的頭撞頭、把權重量化縮小，等額度恢復再補打 Opus。
+- **下一步**：讓模型避開一樣長的頭撞頭、把權重量化縮小、增加大模型的局數。
 
 ![戰績](replays/summary.png)
 <!-- results:end -->
@@ -36,6 +37,7 @@
                                                          └─ MCU 端 sketch.ino：用 Bridge RPC 收畫面，畫 8×13 LED（模型那條亮、對手那條暗）
 ③ 筆電 pc/llm_bridge.py ◀──盤面（socket.io，經 adb 轉發）──▶ 板子
       └─ agy CLI ──▶ ④ Gemini 4 Neon / Claude Opus 5.5（不需要 API 金鑰，用自己登入的訂閱）
+         （Opus 第 2～6 局：agy 的 Opus 額度用完，改用 Claude Code CLI 呼叫同一個模型，見「限制」）
 ```
 
 ## 遊戲規則
@@ -95,6 +97,8 @@ adb forward tcp:7000 tcp:7000           # 之後開 http://localhost:7000
 
 # 跟大模型對打（筆電要裝好 agy 並登入）
 python pc/llm_bridge.py --run gemini:6 --run opus:6 --resume
+# agy 的 Opus 額度用完時：Opus 改走 Claude Code CLI（同一個模型、同一個 prompt，要先 claude auth login）
+python pc/llm_bridge.py --run opus:6 --resume --opus-via claude
 
 # 統計、重播、投影片、影片
 python pc/summary.py
@@ -131,12 +135,12 @@ python pc/render_video.py --story film/story.json --out replays/demo.mp4
 <!-- limits:start -->
 - 對規則 AI：100 局贏 95、平 2、輸 3。訓練時對規則 AI 的勝率在 90～94% 停住，再多訓練也沒有明顯進步。
 - Gemini 的 2 場平手都在第 5 步：兩條蛇一樣長、頭撞頭一起死。模型的獎勵裡平手算 0，所以它不會特別避開「一樣長的頭撞頭」。
-- 模型贏 Gemini 的 4 局，Gemini 全部是餓死（40 步沒吃到）；其中 3 局 Gemini 其實比模型長。模型不是靠搶食物贏，是比較會顧飢餓值。
-- 大模型的局數很少：Gemini 6 局、Opus 只有 1 局。Opus 打完 1 局、第 2 局走到第 8 步就碰到整週的額度上限（11/26 21:11 才重置，超過繳交期限），第 2 局不算，勝率只能當初步結果。
-- 大模型的時間 = 筆電呼叫 agy 到拿到答案（含網路和 CLI 啟動），等額度重置的時間不算；Gemini 最慢一步 208 秒。
-- 板子在對局中斷電重開過一次；之後橋接程式改成會自動救援、讀紀錄接續，沒打完的局用同一個開局重打。
+- 大模型輸的方式：Gemini 4 局全是餓死（其中 3 局比模型長）；Opus 6 局是 3 局撞到身體、2 局頭撞頭時比較短、1 局餓死（其中 3 局比模型長）。大模型會吃，但顧不好飢餓值和身體位置。
+- 樣本小：Gemini 6 局、Opus 6 局，勝率只能當初步結果。
+- Opus 第 1 局走 agy；agy 的 Opus 整週額度用完（11/26 21:11 才重置）後，第 2～6 局改用 Claude Code CLI 呼叫同一個模型（Claude Opus 5.5、effort high、同一個 prompt、不給工具），紀錄裡有標明。兩條路每步時間相近（11.7 秒 vs 約 11 秒）。
+- 大模型的時間 = 筆電呼叫 CLI 到拿到答案（含網路和 CLI 啟動），等額度重置的時間不算；Gemini 最慢一步 208 秒。板子曾斷電重開一次，之後橋接程式會自動救援、讀紀錄接續。
 <!-- limits:end -->
 
 ## 安全
 
-程式、紀錄、影片裡都沒有 API 金鑰或密碼：大模型是透過本機已登入的 agy CLI 呼叫，板子用 USB（adb）連線。
+程式、紀錄、影片裡都沒有 API 金鑰或密碼：大模型是透過本機已登入的 agy CLI（和 Claude Code CLI）呼叫，板子用 USB（adb）連線。

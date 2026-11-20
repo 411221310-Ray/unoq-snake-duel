@@ -29,16 +29,16 @@
  },
  "opus": {
   "name": "Claude Opus 5.5",
-  "games": 1,
-  "win": 1,
+  "games": 6,
+  "win": 6,
   "draw": 0,
   "loss": 0,
-  "model_ms": 12.86,
-  "opp_ms": 11714.1,
-  "opp_ms_max": 25782,
-  "steps": 43.0,
-  "len_model": 5.0,
-  "len_opp": 4.0,
+  "model_ms": 13.39,
+  "opp_ms": 11136.2,
+  "opp_ms_max": 29406,
+  "steps": 41.7,
+  "len_model": 4.17,
+  "len_opp": 5.0,
   "timeouts": 0
  }
 }

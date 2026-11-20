@@ -10,6 +10,8 @@
 - 只記錄自己開的那一組對局；別人從網頁開的局（例如拍片時）不會混進 logs/games.jsonl。
 - 板子重開（USB 斷線、斷電）時：用 adb 重新轉發 port、重新啟動 App，沒打完的那局用同一個開局重打。
 
+- `--opus-via claude`：agy 的 Opus 額度用完時，改用 Claude Code CLI（`claude -p`，自己登入的 Claude 訂閱）問同一個
+  Claude Opus 5.5（effort high）。prompt 完全一樣；不給工具、不讀 MCP、不存對話。紀錄裡的 model 會標成 claude-code:…。
 - agy 的額度用完（RESOURCE_EXHAUSTED）時：開局第一步就沒額度 → 這局作廢、先打另一個對手；
   打到一半才沒額度 → 這局不作廢，停在那一步等額度重置後接著打（板子會等，等的時間不算進大模型的思考時間）。
 - 每局的完整紀錄（開局種子、每一步動作、雙方花的時間、大模型的原始回答）存在 logs/games.jsonl，
@@ -29,6 +31,8 @@ import time
 import socketio
 
 AGY = os.environ.get("AGY", os.path.expandvars(r"%LOCALAPPDATA%\agy\bin\agy.exe"))
+CLAUDE = os.environ.get("CLAUDE_CLI", os.path.expandvars(r"%USERPROFILE%\.local\bin\claude.exe"))
+CLAUDE_SYSTEM = "你在玩一個文字遊戲，照使用者的指示回答。"
 
 PROMPT = """不需要讀檔或使用任何工具，直接回答。
 
@@ -88,12 +92,44 @@ def ask_agy(model_id: str, prompt: str, timeout: float, workdir: str) -> tuple[s
     return (found[-1] if found else None), raw[-400:], ms
 
 
+def ask_claude(model_id: str, prompt: str, timeout: float, workdir: str, effort: str = "high") -> tuple[str | None, str, float]:
+    """改用 Claude Code CLI（自己登入的 Claude 訂閱）問同一個模型；回傳格式跟 ask_agy 一樣。
+    不給任何工具、不讀設定檔和 MCP、不存對話；系統提示只有一句，盤面和規則跟 agy 用的 prompt 完全相同。"""
+    env = {k: v for k, v in os.environ.items() if not k.upper().startswith(("CLAUDE", "ANTHROPIC"))}  # 當成獨立的 CLI 執行
+    cmd = [CLAUDE, "-p", "--model", model_id, "--effort", effort, "--tools", "", "--system-prompt", CLAUDE_SYSTEM,
+           "--strict-mcp-config", "--no-session-persistence", "--disable-slash-commands", "--output-format", "json"]
+    t0 = time.monotonic()
+    try:
+        proc = subprocess.run(cmd, input=prompt, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                              timeout=timeout + 15, cwd=workdir, env=env)
+        out, err = (proc.stdout or "").strip(), (proc.stderr or "").strip()
+    except subprocess.TimeoutExpired:
+        return None, "(timeout)", (time.monotonic() - t0) * 1000
+    ms = (time.monotonic() - t0) * 1000
+    try:
+        j = json.loads(out.splitlines()[-1])
+        text, is_err, use = str(j.get("result", "")), bool(j.get("is_error")), j.get("usage") or {}
+    except (ValueError, IndexError):
+        text, is_err, use = (out + " " + err).strip(), True, {}
+    if is_err and re.search(r"limit|429|quota|rate", text, re.I):     # 訂閱額度用完：換成跟 agy 一樣的格式，交給同一套等待邏輯
+        m = re.search(r"\|(\d{10})", text)
+        wait = max(60, int(m.group(1)) - time.time()) if m else 30 * 60
+        h, rem = divmod(int(wait), 3600)
+        return None, f"RESOURCE_EXHAUSTED (claude) Resets in {h}h{rem // 60}m{rem % 60}s | {text[-300:]}", ms
+    found = re.findall(r"\b(UP|DOWN|LEFT|RIGHT)\b", text.upper()) if not is_err else []
+    toks = (f" [tokens in {use.get('input_tokens', 0) + use.get('cache_read_input_tokens', 0) + use.get('cache_creation_input_tokens', 0)}"
+            f" out {use.get('output_tokens', 0)}]")
+    return (found[-1] if found else None), (text[-360:] + toks), ms
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:7000", help="板子網頁的位址（ADB 轉發後用 localhost）")
     ap.add_argument("--run", action="append", default=[], help="對手:局數，例如 opus:6，可以給好幾個（會輪流打）")
     ap.add_argument("--gemini-model", default="gemini-4-neon-high")
     ap.add_argument("--opus-model", default="claude-opus-5-5-high")
+    ap.add_argument("--opus-via", choices=["agy", "claude"], default="agy",
+                    help="Opus 走哪條路：agy（預設）或 Claude Code CLI（agy 的 Opus 額度用完時改用，同一個模型、同樣 high）")
     ap.add_argument("--timeout", type=float, default=300, help="每次呼叫大模型最多等幾秒")
     ap.add_argument("--llm-timeout", type=float, default=8 * 3600,
                     help="板子最多等大模型一步多久（要比等額度重置還久，打到一半沒額度才不會作廢）")
@@ -108,6 +144,8 @@ def main():
     args = ap.parse_args()
 
     models = {"gemini": args.gemini_model, "opus": args.opus_model}
+    if args.opus_via == "claude":
+        models["opus"] = "claude-code:claude-opus-5-5:high"            # 紀錄裡標明走 Claude Code CLI
     os.makedirs(os.path.dirname(args.log) or ".", exist_ok=True)
     workdir = tempfile.mkdtemp(prefix="snake-llm-")        # 讓 agy 在空資料夾跑，不會去讀專案檔案
     sio = socketio.Client(reconnection=True, reconnection_delay=2)
@@ -145,7 +183,10 @@ def main():
                         f"（{time.strftime('%H:%M', time.localtime(cooldown_until[opp]))}）重置後接著打")
                     time.sleep(wait)
                     continue
-                move, raw1, ms1 = ask_agy(models[opp], build_prompt(p), args.timeout, workdir)
+                if opp == "opus" and args.opus_via == "claude":
+                    move, raw1, ms1 = ask_claude("claude-opus-5-5", build_prompt(p), args.timeout, workdir, "high")
+                else:
+                    move, raw1, ms1 = ask_agy(models[opp], build_prompt(p), args.timeout, workdir)
                 raw, ms = (raw + " | " if raw else "") + raw1, ms + ms1   # ms 只算大模型真的在回答的時間，不含等額度
                 if move is not None:
                     break
