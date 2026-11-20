@@ -138,19 +138,21 @@ def svg_arch() -> str:
     # 板子
     p.append(f'<rect x="410" y="10" width="420" height="450" rx="18" fill="none" stroke="{MODEL_C}" stroke-width="2" stroke-dasharray="6 6"/>')
     p.append(f'<text x="430" y="40" fill="{MODEL_C}" font-size="18" font-weight="700">② Arduino UNO Q（不用網路）</text>')
-    p.append(box(428, 56, 384, 160, "Linux 端（4 核 ARM）· main.py", ["遊戲規則（numpy）", "強化學習模型推論：每步約 12 ms", "規則 AI（對照組）", "WebUI：port 7000（socket.io）"], col=MODEL_C))
+    p.append(box(428, 56, 384, 160, "Linux 端（4 核 ARM）· main.py", ["遊戲規則（numpy）", "強化學習模型推論：每步約 12～14 ms", "規則 AI（對照組）", "WebUI：port 7000（socket.io）"], col=MODEL_C))
     p.append(arrow(620, 218, 620, 290, "Bridge RPC：draw(104 bytes)", lx=632, ly=260, anchor="start"))
     p.append(box(428, 292, 384, 150, "MCU 端（Zephyr）· sketch.ino", ["Arduino_LED_Matrix", "8 × 13 LED、8 階亮度", "模型那條亮、對手那條暗"], col=MODEL_C))
     # 筆電 + 雲端
-    p.append(box(900, 56, 290, 160, "③ 筆電 · llm_bridge.py", ["收板子送來的盤面（文字）", "用 agy CLI 問大模型", "不需要 API 金鑰", "紀錄寫進 logs/games.jsonl"]))
+    p.append(box(900, 56, 290, 160, "③ 筆電 · llm_bridge.py", ["收板子送來的盤面（文字）", "用 agy／Claude Code CLI 問大模型", "不需要 API 金鑰", "紀錄寫進 logs/games.jsonl"]))
     p.append(arrow(814, 120, 898, 120))
     p.append(arrow(898, 160, 816, 160))
     p.append(f'<text x="858" y="108" fill="{MUTED}" font-size="13" text-anchor="middle">盤面</text>')
     p.append(f'<text x="858" y="184" fill="{MUTED}" font-size="13" text-anchor="middle">一步</text>')
-    p.append(box(900, 292, 290, 150, "④ 雲端大模型", ["Gemini 4 Neon", "Claude Opus 5.5", "每步 10～60 秒，有額度限制"], col=OPP_C))
-    p.append(arrow(1045, 218, 1045, 290))
+    p.append(box(900, 292, 290, 150, "④ 雲端大模型（high 推理）", ["Gemini 4 Neon、Claude Opus 5.5", "平均每步 11～48 秒", "最久一步 208.5 秒", "有額度限制"], col=OPP_C))
+    p.append(arrow(1030, 218, 1030, 290))
+    p.append(arrow(1062, 290, 1062, 218))
     p.append(box(10, 292, 270, 150, "網頁（瀏覽器）", ["即時盤面、比分", "每步花的時間", "可以開局、真人對打"]))
     p.append(arrow(428, 200, 284, 330, "adb 轉發 port 7000", lx=344, ly=238, anchor="end"))
+    p.append(arrow(296, 352, 440, 222))
     p.append("</svg>")
     return "".join(p)
 
@@ -217,18 +219,18 @@ def build(summ: dict, train: list[dict], extra: dict) -> list[str]:
     slides.append(f"""<section class="slide"><div class="kicker">問題</div><h2>AI 要放在板子上，還是雲端？</h2>
 <div class="grid2"><div class="card"><p class="model"><b>板上小模型</b></p><ul><li>只會一件事，要自己訓練</li><li>反應快、不用網路、不花額度</li></ul></div>
 <div class="card"><p class="opp"><b>雲端大模型</b></p><ul><li>什麼都懂，直接拿來用</li><li>要網路、要等、有額度限制</li></ul></div></div>
-<p style="margin-top:30px">用一個<b>要即時做決定</b>的雙人遊戲來比：<br>專門訓練的板上小模型，打不打得贏通用的雲端大模型？比<b>勝率</b>，也比<b>每一步要想多久</b>。</p>
+<p style="margin-top:30px">用一個<b>要即時做決定</b>的雙人遊戲來比：<br>專門訓練的板上小模型，打不打得贏通用的雲端大模型？比<b>勝率</b>，也比<b>每一步要花多久</b>。</p>
 {foot(2)}</section>""")
     slides.append(f"""<section class="slide"><div class="kicker">系統架構</div><h2>訓練在雲端，比賽在板子上</h2>{svg_arch()}{foot(3)}</section>""")
     slides.append(f"""<section class="slide"><div class="kicker">遊戲設計</div><h2>雙人貪食蛇：棋盤就是 LED 矩陣</h2>
 <div class="grid2"><div><ul>
-<li>8 × 13 格，跟 UNO Q 的 LED 矩陣一樣大</li><li>兩條蛇<b>同時</b>移動，場上 1 個食物</li><li>撞牆、撞身體就死</li><li>頭撞頭：比長度，一樣長兩條都死（平手）</li><li>40 步沒吃東西就餓死</li><li>300 步時比長度</li></ul></div>
+<li>8 × 13 格，跟 UNO Q 的 LED 矩陣一樣大</li><li>兩條蛇<b>同時</b>移動，起始長度 3，場上 1 個食物</li><li>撞牆、撞身體就死（沒吃東西時尾巴會讓開）</li><li>頭撞頭：長的活、短的死；一樣長兩條都死（平手）</li><li>40 步沒吃東西就餓死</li><li>300 步時比長度，一樣長算平手</li></ul></div>
 <div class="card"><p><b>為什麼選這個遊戲</b></p><ul><li>每一步都要馬上決定，延遲會直接影響能不能玩</li><li>同時移動，要預測對手，不是背公式</li><li>LED 上看得出輸贏：<span class="model">模型那條亮</span>、<span class="opp">對手那條暗</span></li></ul></div></div>
 {foot(4)}</section>""")
     last = train[-1]
     slides.append(f"""<section class="slide"><div class="kicker">訓練</div><h2>PPO 自我對弈 + 對手池</h2>
 <div class="grid2" style="grid-template-columns: 1fr 590px"><div><ul>
-<li>網路：3 個殘差塊、64 通道卷積，輸入 12 個通道（兩條蛇、食物、長度差、飢餓值、剩幾步）</li>
+<li>網路：3 個殘差塊、64 通道卷積，輸入 12 個通道（雙方各 3 個：頭、身體、身體剩幾步；食物、棋盤範圍、長度差、雙方飢餓值、剩幾步）</li>
 <li>70% 跟「現在的自己」打，30% 從 50 個舊版本裡挑（越打不贏的越常挑）</li>
 <li>獎勵：贏 +1、輸 −1；吃食物的小獎勵在前 2,000 萬步慢慢降到 0</li>
 <li>Colab A100：{int(last['agent_steps']) / 1e8:.2f} 億步，約 11 萬步/秒</li></ul></div>
@@ -241,7 +243,7 @@ def build(summ: dict, train: list[dict], extra: dict) -> list[str]:
 <div class="card stat"><span class="big model">{extra['replayed']}</span><span>局重新模擬，全部對得上</span><span class="muted" style="font-size:17px">用開局種子＋每一步動作重跑，步數、長度、勝負都跟紀錄一樣</span></div></div>
 {foot(6)}</section>""")
     slides.append(f"""<section class="slide"><div class="kicker">部署</div><h2>模型直接跑在 UNO Q 上</h2>
-<div class="stats"><div class="card stat"><span class="big model">{rule.get('model_ms', 12):.1f} ms</span><span>每一步推論（板子 Linux 端，numpy）</span></div>
+<div class="stats"><div class="card stat"><span class="big model">{rule.get('model_ms', 12):.1f} ms</span><span>每一步推論（板子 Linux 端，numpy）</span><span class="muted" style="font-size:17px">對規則 AI 100 局的平均；對大模型的局約 13.5 ms</span></div>
 <div class="card stat"><span class="big model">7.7 MB</span><span>模型權重（193 萬參數，float32）</span></div>
 <div class="card stat"><span class="big model">0</span><span>需要的網路連線和 API 金鑰</span></div></div>
 <ul style="margin-top:30px"><li>App Lab 的 App：Python（遊戲＋模型）＋ Arduino sketch（LED 矩陣），用 Bridge RPC 傳畫面</li>
@@ -251,8 +253,10 @@ def build(summ: dict, train: list[dict], extra: dict) -> list[str]:
 <li><b>成對對局</b>：同一個開局打兩次，第二次兩邊交換，抵消開局運氣</li>
 <li>開局種子固定（20261120 起），每個對手都打同一組開局</li>
 <li>板上模型用固定策略（每步選機率最高的動作），不偷看對手這一步</li>
-<li>大模型拿到的是文字盤面＋完整規則＋合法方向，只回一個方向；用 agy／Claude Code CLI 呼叫，不用 API 金鑰</li>
-<li>大模型打到一半額度用完：盤面停住，等重置再接著打（等的時間不算思考時間）；有任何一步沒回答的局一律<b>作廢</b>、同一個開局重打，不算模型贏</li>
+<li><b>規則 AI</b>（對照組，也在板上跑）：不走會撞死的方向、用 BFS 找食物（越餓越積極）、填色檢查空間夠不夠、比對方長才去頭撞頭</li>
+<li>大模型拿到的是文字盤面＋完整規則＋合法方向，只回一個方向；用 agy／Claude Code CLI 呼叫，不用 API 金鑰；兩個都用 <b>high</b> 推理檔位</li>
+<li>大模型的時間是<b>每步回應時間</b>（含網路和 CLI 啟動）；板上模型只算推論</li>
+<li>大模型打到一半額度用完：盤面停住，等重置再接著打（等的時間不算回應時間）；有任何一步沒回答的局一律<b>作廢</b>、同一個開局重打，不算模型贏</li>
 <li>每一局的種子、每一步的動作、雙方花的時間、大模型原始回答都存在 logs/games.jsonl</li></ul>
 {foot(8)}</section>""")
     rows = "".join(
@@ -264,7 +268,8 @@ def build(summ: dict, train: list[dict], extra: dict) -> list[str]:
 <div style="margin-top:26px">{svg_results(summ, h=60 * len([k for k in ORDER if k in summ]) + 20)}</div>
 {foot(9)}</section>""")
     ratio = [f"{s['name']} 每步平均 {fmt_ms(s['opp_ms'])}，是模型的 {s['opp_ms'] / max(s['model_ms'], 1e-6):,.0f} 倍" for s in llm]
-    slides.append(f"""<section class="slide"><div class="kicker">速度</div><h2>每一步要想多久（對數刻度）</h2>
+    slides.append(f"""<section class="slide"><div class="kicker">速度</div><h2>每一步要花多久（對數刻度）</h2>
+<div style="font-size:20px;margin:-6px 0 8px"><span class="model">■ 板上模型</span>　　<span class="opp">■ 對手</span></div>
 {svg_latency(summ)}
 <ul style="margin-top:16px">{''.join(f'<li>{esc(r)}</li>' for r in ratio)}<li>模型和規則 AI 都在板子上算，大模型要經過筆電和網路</li></ul>
 {foot(10)}</section>""")

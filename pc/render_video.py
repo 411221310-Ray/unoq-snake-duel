@@ -287,8 +287,11 @@ def seg_clip(page: Page, seg, out):
     d = (end - start) / speed
     cuts = [0.0] + [float(c[0]) for c in caps if 0 < c[0] < d]
     inputs = ["-ss", f"{start:.3f}", "-t", f"{end - start:.3f}", "-i", str(src)]
-    chain = [f"[0:v]setpts=(PTS-STARTPTS)/{speed},fps={FPS},scale=1920:1080:force_original_aspect_ratio=decrease,"
-             f"pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x0f1412[b0]"]
+    z = float(seg.get("zoom", 1.0))      # <1：整個畫面縮小、靠左放，右邊資訊卡才不會蓋到螢幕上的棋盤
+    zw, zh = int(1920 * z) // 2 * 2, int(1080 * z) // 2 * 2
+    px = "0" if z < 1 else "(ow-iw)/2"
+    chain = [f"[0:v]setpts=(PTS-STARTPTS)/{speed},fps={FPS},scale={zw}:{zh}:force_original_aspect_ratio=decrease,"
+             f"pad=1920:1080:{px}:(oh-ih)/2:color=0x0f1412[b0]"]
     for i, t in enumerate(cuts):
         t_end = cuts[i + 1] if i + 1 < len(cuts) else d + 1
         cap = [c[1] for c in caps if c[0] <= t + 1e-9]
@@ -322,7 +325,7 @@ def main():
             wav, say_len = (tts(seg["say"], work / "tts", args.rate) if seg.get("say") else (None, 0.0))
             seg = dict(seg)
             if "slide" in seg:
-                seg["dur"] = max(seg.get("dur", 6), say_len + 1.0)       # 投影片停到旁白講完
+                seg["dur"] = max(seg.get("dur", 6), say_len + 0.8)       # 投影片停到旁白講完
                 seg_slide(seg, out)
             elif "film" in seg:
                 seg_film(page, seg, out, pip)
