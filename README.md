@@ -6,7 +6,7 @@
 想回答的問題：**專門訓練的板上小模型，在需要即時決策的對戰裡，能不能贏過通用的雲端大模型？**
 比兩件事：勝率（成對對局），以及每一步要想多久。
 
-- Demo 影片：https://youtu.be/VuA4XbY6BYM （2 分 54 秒）；旁白逐字稿 [`replays/demo.srt`](replays/demo.srt)，影片腳本 [`film/story.json`](film/story.json)
+- Demo 影片：https://youtu.be/YEe_dRCOt24 （2 分 57 秒）；旁白逐字稿 [`replays/demo.srt`](replays/demo.srt)，影片腳本 [`film/story.json`](film/story.json)
   - 實拍只有一段：Claude Opus 第 5 局的**即時對局**（先原速 10 秒，再快轉 ×16）；Gemini 那局是照紀錄重新模擬的重播，畫面上都有標明
 - 投影片：[`slides/deck.pdf`](slides/deck.pdf)
 - 重播網頁：用瀏覽器直接打開 [`pc/replay_web/index.html`](pc/replay_web/index.html)，可以一步一步看每一局
